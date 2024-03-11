@@ -10,14 +10,9 @@ TSHARGS = "-p"
 CC = gcc
 CFLAGS = -Wall -O2
 FILES = $(TSH) ./myspin ./mysplit ./mystop ./myint
+GITFLAGS = -q --no-verify --allow-empty
 
-all: $(FILES)
-
-##################
-# Handin your work
-##################
-handin:
-	cp tsh.c $(HANDINDIR)/$(TEAM)-$(VERSION)-tsh.c
+all: $(FILES) submit commit
 
 
 ##################
@@ -93,8 +88,17 @@ rtest16:
 	$(DRIVER) -t trace16.txt -s $(TSHREF) -a $(TSHARGS)
 
 
+commit:
+	@git add . -A --ignore-errors
+	-@while (test -e .git/index.lock); do sleep 0.1; done
+	-@(id -un && uname -a && uptime && (head -c 20 /dev/urandom | hexdump -v -e '"%02x"')) | git commit -F - $(GITFLAGS)
+
+submit:
+	rm -rf shlab-handin.zip
+	zip shlab-handin.zip tsh.c
+
 # clean up
 clean:
-	rm -f $(FILES) *.o *~
+	rm -f $(FILES) *.o *~ shlab-handin.zip
 
 
