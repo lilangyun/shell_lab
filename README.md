@@ -197,11 +197,13 @@ tsh> q
 分数将根据以下比例计算，最大分数为90分：
 
 * 80分正确性：每个5分的16个跟踪文件。
+
 * 10分代码风格分：代码有良好的注释（5分），并检查每个系统调用的返回值（5分）。
   
 我们将在Linux机器上使用相同的shell驱动程序和跟踪文件对你的解决方案进行正确性测试，这些文件已包含在您的实验目录中。你的shell在这些跟踪上应该产生与shell的参考实现有相同的输出，只有两个例外：
 
 * PIDs可能会不同。
+
 * trace11.txt、trace12.txt和trace13.txt中/bin/ps命令的输出在每次运行时都会有所不同。然而，在/bin/ps命令输出中，任何mysplit进程的运行状态应该是相同的。
 
 ## 实验代码包内容说明
@@ -209,18 +211,26 @@ tsh> q
 文件：
 
 Makefile        # 编译脚本
+
 README.md       # 本文件
+
 tsh.c           # shell程序文件
+
 tshref          # tsh的参考实现程序
 
 # 用于测试的文件
 sdriver.pl      # shell测试程序
+
 trace*.txt      # 15个测试文件，由sdriver.pl使用
+
 tshref.out      # 15个测试文件的示例输出
 
 # 测试的示例程序，不需要修改
 myspin.c        # Takes argument <n> and spins for <n> seconds
+
 mysplit.c       # Forks a child that spins for <n> seconds
+
 mystop.c        # Spins for <n> seconds and sends SIGTSTP to itself
+
 myint.c         # Spins for <n> seconds and sends SIGINT to itself
 
