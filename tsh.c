@@ -269,11 +269,21 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv) 
 {
-    // 简单的shell只有个别内置命令
+    // 简单的shell只有个别内置命令:quit,fg,bg,jobs
     if(!strcmp(argv[0],"quit")){
         exit(0);
     }
-    // 教材上写忽略单个&
+    if(!strcmp(argv[0],"jobs")){
+        listjobs(jobs);
+        return 1;
+    }
+    if(!strcmp(argv[0],"fg")){
+        return 1;
+    }
+    if(!strcmp(argv[0],"bg")){
+        return 1;
+    }
+    // 教材上提到忽略单个&
     if(!strcmp(argv[0],"&")){
         return 1;
     }
@@ -309,6 +319,8 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
+    // 我们现这样写，即默认杀死子进程
+    exit(0);
     return;
 }
 
@@ -319,6 +331,7 @@ void sigchld_handler(int sig)
  */
 void sigint_handler(int sig) 
 {
+    exit(0);
     return;
 }
 
@@ -329,6 +342,7 @@ void sigint_handler(int sig)
  */
 void sigtstp_handler(int sig) 
 {
+    exit(0);
     return;
 }
 
