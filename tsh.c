@@ -5,7 +5,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <unistd.h>  //这个库包含fork()函数
 #include <string.h>
 #include <ctype.h>
 #include <signal.h>
@@ -136,15 +136,15 @@ int main(int argc, char **argv)
 	    printf("%s", prompt);
 	    fflush(stdout);
 	}
-	if ((fgets(cmdline, MAXLINE, stdin) == NULL) && ferror(stdin))
-	    app_error("fgets error");
+	if ((fgets(cmdline, MAXLINE, stdin) == NULL) && ferror(stdin)) //在这里cmdline中输出字符
+	    app_error("fgets error"); //如果输入为空，则返回错误
 	if (feof(stdin)) { /* End of file (ctrl-d) */
 	    fflush(stdout);
 	    exit(0);
 	}
 
 	/* Evaluate the command line */
-	eval(cmdline);
+	eval(cmdline);  //解析cmdline
 	fflush(stdout);
 	fflush(stdout);
     } 
@@ -165,6 +165,44 @@ int main(int argc, char **argv)
 */
 void eval(char *cmdline) 
 {
+    char *argv[MAXARGS];  //参数列表,char*是数组类型,MAXARGS是数组长度
+    char buf[MAXLINE];  //缓冲区
+    int bg; //是否在后台执行
+    pid_t pid;  //进程id
+
+    strcpy(buf,cmdline);  //将命令行复制到buf中
+    bg=parseline(buf,argv);  //解析命令行,接受返回值
+    // 这里因为在paseline中需要移动/修改参数，所以需要用buf缓冲区储存一下
+
+    if(argv[0]==NULL){ //忽略空行
+        return ;
+    }
+
+    //如果不为内置命令
+    if(!builtin_cmd(argv)){
+        //那么就调用一个进程去执行它:fork()+execve()
+        //如果是子进程
+        if((pid=fork())==0){
+            // 如果无法执行
+            if(execve(argv[0],argv,environ)<0){
+                printf("%s: The command not found.\n",argv[0]);
+                exit(0);
+            }
+        }
+    }
+
+    // 如果为不后台命令
+    if(!bg){
+        // 则需要等待前台子进程执行完再执行下一条指令
+        int status;
+        if(waitpid(pid,&status,0)<0){
+            unix_error("waitfg: waitpid error");
+        }
+    }
+    // 否则无需等待
+    else{
+        printf("%d %s",pid,cmdline);
+    }
     return;
 }
 
@@ -231,6 +269,14 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv) 
 {
+    // 简单的shell只有个别内置命令
+    if(!strcmp(argv[0],"quit")){
+        exit(0);
+    }
+    // 教材上写忽略单个&
+    if(!strcmp(argv[0],"&")){
+        return 1;
+    }
     return 0;     /* not a builtin command */
 }
 
