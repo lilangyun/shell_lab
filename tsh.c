@@ -272,6 +272,7 @@ int builtin_cmd(char **argv)
     // 简单的shell只有个别内置命令:quit,fg,bg,jobs
     if(!strcmp(argv[0],"quit")){
         exit(0);
+        return 1;
     }
     if(!strcmp(argv[0],"jobs")){
         listjobs(jobs);
@@ -284,9 +285,9 @@ int builtin_cmd(char **argv)
         return 1;
     }
     // 教材上提到忽略单个&
-    if(!strcmp(argv[0],"&")){
-        return 1;
-    }
+    // if(!strcmp(argv[0],"&")){
+    //     return 1;
+    // }
     return 0;     /* not a builtin command */
 }
 
