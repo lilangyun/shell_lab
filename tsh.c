@@ -328,7 +328,7 @@ void sigchld_handler(int sig)
     pid_t pid;
     while(waitpid(-1,NULL,0)>0){
         // printf("Handler reap the child.\n");
-        pid=getpid();
+        pid=getppid();
         deletejob(jobs,pid);
     }
 }
