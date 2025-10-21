@@ -324,10 +324,8 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
-    sigset_t mask;
-    sigemptyset(&mask);   
     while (fgpid(jobs) != 0){
-        sigsuspend(&mask);      //暂停时取消阻塞,见sigsuspend用法
+        
     }
     return;
 }
