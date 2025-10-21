@@ -193,7 +193,7 @@ void eval(char *cmdline)
                 exit(0);
             }
         }
-        while(pid>0){
+        if(pid>0){
             addjob(jobs,pid,BG,cmdline);
         }
     }
