@@ -184,10 +184,14 @@ void eval(char *cmdline)
 
     sigfillset(&mask_all);
     sigemptyset(&mask);
-    sigprocmask(SIG_BLOCK,&mask,&prev_one);
+    sigaddset(&mask,SIGCHLD);
 
     //如果不为内置命令
     if(!builtin_cmd(argv)){
+
+        // 阻塞sigchild信号
+        sigprocmask(SIG_BLOCK,&mask,&prev_one);
+
         //那么就调用一个进程去执行它:fork()+execve()
         if((pid=fork())==0){
             // 如果无法执行
@@ -198,7 +202,8 @@ void eval(char *cmdline)
         }
         // 如果为前台命令
         if(!bg){
-            // addjob(jobs,pid,FG,cmdline);
+            addjob(jobs,pid,FG,cmdline);
+            sigprocmask(SIG_SETMASK, &prev_one, NULL);
             // 则需要等待前台子进程执行完再执行下一条指令
             int status;
             if(waitpid(pid,&status,0)<0){
