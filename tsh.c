@@ -226,7 +226,7 @@ void eval(char *cmdline)
         else{
             sigprocmask(SIG_BLOCK,&mask_all,NULL);
             addjob(jobs,pid,BG,cmdline);
-            printf("[%d] (%d) %s",pid2jid(pid),getegid(),cmdline);
+            printf("[%d] (%d) %s",pid2jid(pid),pid,cmdline);
             sigprocmask(SIG_SETMASK,&prev_one,NULL);
         }
     }
@@ -334,16 +334,9 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
-    sigset_t mask, prev;
-	sigemptyset(&mask);
-	sigaddset(&mask, SIGCHLD);
-	sigprocmask(SIG_BLOCK, &mask, &prev);
-	while (fgpid(jobs) != 0){
-		sigsuspend(&mask);
-		//printf ("wait here\n");
-	}
-	sigprocmask(SIG_SETMASK, &prev, NULL);
-    return;
+    while (fgpid(jobs) == pid) {
+        sleep(0.1);  // 避免过度占用CPU
+    }
     // return;
 }
 
