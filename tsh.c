@@ -217,6 +217,7 @@ void eval(char *cmdline)
             if(waitpid(pid,&status,0)<0){
                 unix_error("waitfg: waitpid error");
             }
+            deletejob(jobs,pid);
         }
         // 否则无需等待
         else{
