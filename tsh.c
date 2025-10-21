@@ -198,7 +198,7 @@ void eval(char *cmdline)
             if(waitpid(pid,&status,0)<0){
                 unix_error("waitfg: waitpid error");
             }
-            deletejob(jobs,pid);
+            // deletejob(jobs,pid);
             // 销毁，否则就会残留在job_list中干扰结果
         }
         // 否则无需等待
