@@ -170,8 +170,6 @@ void eval(char *cmdline)
     int bg; //是否在后台执行
     pid_t pid;  //进程id
 
-    sigset_t mask_all,prev_all;
-
     // sigprocmask();
 
     strcpy(buf,cmdline);  //将命令行复制到buf中
