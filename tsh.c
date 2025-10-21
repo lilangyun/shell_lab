@@ -336,7 +336,11 @@ void sigchld_handler(int sig)
  */
 void sigint_handler(int sig) 
 {
-    exit(0);
+    // 这里需要利用到kill函数将信号发送给前台程序
+    // 疑问：怎么确保是哪个前台进程/PID？
+    // 答：前台至多有一个进程正在运行
+    pid_t pid=getpid();
+    kill(-pid,SIGINT);
     return;
 }
 
