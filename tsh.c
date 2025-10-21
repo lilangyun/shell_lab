@@ -325,7 +325,7 @@ void waitfg(pid_t pid)
 void sigchld_handler(int sig) 
 {
     while(waitpid(-1,NULL,0)>0){
-        printf("Handler reap the child.\n");
+        // printf("Handler reap the child.\n");
     }
     sleep(1);
 }
@@ -488,7 +488,7 @@ void listjobs(struct job_t *jobs)
     for (i = 0; i < MAXJOBS; i++) {
 	if (jobs[i].pid != 0) {
 	    printf("[%d] (%d) ", jobs[i].jid, jobs[i].pid);
-        // 我们在此处看到了test04的参考输出，说明我们的实现也应该调用listjobs()
+        // 我们在此处看到了test04的参考输出，说明我们的实现至少与listjobs()的输出有关
 	    switch (jobs[i].state) {
 		case BG: 
 		    printf("Running ");
