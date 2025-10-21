@@ -206,7 +206,7 @@ void eval(char *cmdline)
     else{
         printf("%d %s",pid,cmdline);
         addjob(jobs,pid,BG,cmdline);
-        listjobs(jobs);
+        printf("[%d] (%d) %s\n",getpgrp(),getegid(),cmdline);
     }
     return;
 }
