@@ -193,9 +193,6 @@ void eval(char *cmdline)
                 exit(0);
             }
         }
-        if(pid==0){
-            addjob(jobs,pid,BG,cmdline);
-        }
     }
 
     // 如果为不后台命令
