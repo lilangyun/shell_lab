@@ -202,7 +202,6 @@ void eval(char *cmdline)
                 printf("%s: The command not found.\n",argv[0]);
                 exit(0);
             }
-            exit(0);
         }
 
         // 要处理全局变量jobs,要提前阻塞全部信号
@@ -344,11 +343,30 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
+    int olderrno = errno;   //由于errno是全局变量,注意保存和恢复errno
+    int status;
     pid_t pid;
-    while((pid=waitpid(-1,NULL,0))>0){
-        // printf("Handler reap the child.\n");
-        deletejob(jobs,pid);
+    struct job_t *job;
+    sigset_t mask, prev;
+    sigfillset(&mask);
+    while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0){      //立即返回该子进程的pid
+        sigprocmask(SIG_BLOCK, &mask, &prev);   //阻塞所有信号
+        if (WIFEXITED(status)){                 //正常终止
+            deletejob(jobs, pid);
+        }
+        else if (WIFSIGNALED(status)){          //因为信号而终止, 打印
+            printf ("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid, WTERMSIG(status));
+            deletejob(jobs, pid);
+        }
+        else if (WIFSTOPPED(status)){           //因为信号而停止, 打印
+            printf ("Job [%d] (%d) stoped by signal %d\n", pid2jid(pid), pid, WSTOPSIG(status));
+            job = getjobpid(jobs, pid);
+            job->state = ST;
+        }
+        sigprocmask(SIG_SETMASK, &prev, NULL);          
     }
+    errno = olderrno;
+    return;
 }
 
 /* 
