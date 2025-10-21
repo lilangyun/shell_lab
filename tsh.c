@@ -191,20 +191,20 @@ void eval(char *cmdline)
                 exit(0);
             }
         }
-    }
 
-    // 如果为不后台命令
-    if(!bg){
-        // 则需要等待前台子进程执行完再执行下一条指令
-        int status;
-        if(waitpid(pid,&status,0)<0){
-            unix_error("waitfg: waitpid error");
+        // 如果为前台命令
+        if(!bg){
+            // 则需要等待前台子进程执行完再执行下一条指令
+            int status;
+            if(waitpid(pid,&status,0)<0){
+                unix_error("waitfg: waitpid error");
+            }
         }
-    }
-    // 否则无需等待
-    else{
-        addjob(jobs,pid,BG,cmdline);
-        printf("[%d] (%d) %s",pid2jid(pid),getegid(),cmdline);
+        // 否则无需等待
+        else{
+            addjob(jobs,pid,BG,cmdline);
+            printf("[%d] (%d) %s",pid2jid(pid),getegid(),cmdline);
+        }
     }
     return;
 }
