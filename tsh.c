@@ -180,6 +180,12 @@ void eval(char *cmdline)
         return ;
     }
 
+    sigset_t mask_all,mask,prev_one;
+
+    sigfillset(&mask_all);
+    sigemptyset(&mask);
+    sigprocmask(SIG_BLOCK,&mask,&prev_one);
+
     //如果不为内置命令
     if(!builtin_cmd(argv)){
         //那么就调用一个进程去执行它:fork()+execve()
