@@ -341,6 +341,7 @@ void sigint_handler(int sig)
     // 答：前台至多有一个进程正在运行
     pid_t pid=getpid();
     kill(-pid,SIGINT);
+    printf("Job [%d] (%d) terminated by signal %d",pid2jid(pid),pid,SIGINT);
     return;
 }
 
