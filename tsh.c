@@ -377,18 +377,10 @@ void sigint_handler(int sig)
  */
 void sigtstp_handler(int sig) 
 {
-    pid_t pid = fgpid(jobs);
-    if (pid > 0) {
-        // 发送SIGTSTP暂停进程
-        kill(-pid, SIGTSTP);
-        
-        // 重要：不要立即删除作业，而是标记为停止状态
-        struct job_t *job = getjobpid(jobs, pid);
-        if (job) {
-            job->state = ST;  // 将状态改为STOPPED
-            printf("Job [%d] (%d) stopped by signal %d\n", job->jid, pid, sig);
-        }
-    }
+    pid_t pid=fgpid(jobs);
+    printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(pid),pid,SIGTSTP);
+    kill(-pid,SIGTSTP);
+    return;
 }
 
 /*********************
