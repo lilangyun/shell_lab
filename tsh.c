@@ -383,8 +383,8 @@ void sigint_handler(int sig)
     // 自答：前台至多有一个进程正在运行
     pid_t pid=fgpid(jobs);
     // 疑问：为什么尝试其他getpid函数求得jid均为0，只有fgpid能正确
-    printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(pid),pid,SIGINT);
-    kill(-pid,SIGINT);
+    printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(pid),pid,sig);
+    kill(-pid,sig);
     return;
 }
 
@@ -396,8 +396,8 @@ void sigint_handler(int sig)
 void sigtstp_handler(int sig) 
 {
     pid_t pid=fgpid(jobs);
-    printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(pid),pid,SIGTSTP);
-    kill(-pid,SIGTSTP);
+    printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(pid),pid,sig);
+    kill(-pid,sig);
     return;
 }
 
