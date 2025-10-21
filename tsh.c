@@ -204,9 +204,8 @@ void eval(char *cmdline)
     }
     // 否则无需等待
     else{
-        printf("%d %s",pid,cmdline);
         addjob(jobs,pid,BG,cmdline);
-        printf("[%d] (%d) %s\n",getpgrp(),getegid(),cmdline);
+        printf("[%d] (%d) %s",jobs->jid,getegid(),cmdline);
     }
     return;
 }
