@@ -213,10 +213,7 @@ void eval(char *cmdline)
         // 如果为前台命令
         if(!bg){
             // 则需要等待前台子进程执行完再执行下一条指令
-            int status;
-            if(waitpid(pid,&status,0)<0){
-                unix_error("waitfg: waitpid error");
-            }
+            waitfg(pid);
         }
         // 否则无需等待
         else{
@@ -327,6 +324,11 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
+    sigset_t mask;
+    sigemptyset(&mask);   
+    while (fgpid(jobs) != 0){
+        sigsuspend(&mask);      //暂停时取消阻塞,见sigsuspend用法
+    }
     return;
 }
 
@@ -343,30 +345,11 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
-    int olderrno = errno;   //由于errno是全局变量,注意保存和恢复errno
-    int status;
     pid_t pid;
-    struct job_t *job;
-    sigset_t mask, prev;
-    sigfillset(&mask);
-    while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0){      //立即返回该子进程的pid
-        sigprocmask(SIG_BLOCK, &mask, &prev);   //阻塞所有信号
-        if (WIFEXITED(status)){                 //正常终止
-            deletejob(jobs, pid);
-        }
-        else if (WIFSIGNALED(status)){          //因为信号而终止, 打印
-            printf ("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid, WTERMSIG(status));
-            deletejob(jobs, pid);
-        }
-        else if (WIFSTOPPED(status)){           //因为信号而停止, 打印
-            printf ("Job [%d] (%d) stoped by signal %d\n", pid2jid(pid), pid, WSTOPSIG(status));
-            job = getjobpid(jobs, pid);
-            job->state = ST;
-        }
-        sigprocmask(SIG_SETMASK, &prev, NULL);          
+    while((pid=waitpid(-1,NULL,0))>0){
+        // printf("Handler reap the child.\n");
+        deletejob(jobs,pid);
     }
-    errno = olderrno;
-    return;
 }
 
 /* 
