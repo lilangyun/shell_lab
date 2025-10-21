@@ -397,10 +397,14 @@ void sigint_handler(int sig)
     // 这里需要利用到kill函数将信号发送给前台程序
     // 疑问：怎么确保是哪个前台进程/PID？
     // 自答：前台至多有一个进程正在运行
-    pid_t pid=fgpid(jobs);
-    // 疑问：为什么尝试其他getpid函数求得jid均为0，只有fgpid能正确
-    printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(pid),pid,sig);
-    kill(-pid,sig);
+    // pid_t pid=fgpid(jobs);
+    // // 疑问：为什么尝试其他getpid函数求得jid均为0，只有fgpid能正确
+    // printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(pid),pid,sig);
+    // kill(-pid,sig);
+    // return;
+    pid_t pid;
+	if ((pid = fgpid(jobs)) > 0)
+		kill(-pid, sig);
     return;
 }
 
@@ -411,9 +415,13 @@ void sigint_handler(int sig)
  */
 void sigtstp_handler(int sig) 
 {
-    pid_t pid=fgpid(jobs);
-    printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(pid),pid,sig);
-    kill(-pid,sig);
+    // pid_t pid=fgpid(jobs);
+    // printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(pid),pid,sig);
+    // kill(-pid,sig);
+    // return;
+    pid_t pid;
+	if ((pid = fgpid(jobs)) > 0)
+		kill(-pid, sig);
     return;
 }
 
