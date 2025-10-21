@@ -325,8 +325,10 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
-    while(waitpid(-1,NULL,0)>0){
+    pid_t pid;
+    while((pid=waitpid(-1,NULL,0))>0){
         // printf("Handler reap the child.\n");
+        deletejob(jobs,pid);
     }
 }
 
