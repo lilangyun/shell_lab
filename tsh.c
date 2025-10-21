@@ -191,9 +191,9 @@ void eval(char *cmdline)
                 exit(0);
             }
         }
-
         // 如果为前台命令
         if(!bg){
+            addjob(jobs,pid,FG,cmdline);
             // 则需要等待前台子进程执行完再执行下一条指令
             int status;
             if(waitpid(pid,&status,0)<0){
@@ -341,7 +341,7 @@ void sigint_handler(int sig)
     // 答：前台至多有一个进程正在运行
     pid_t pid=getpid();
     kill(-pid,SIGINT);
-    printf("Job [%d] (%d) terminated by signal %d",pid2jid(pid),pid,SIGINT);
+    printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(pid),pid,SIGINT);
     return;
 }
 
