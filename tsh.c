@@ -368,7 +368,7 @@ void sigchld_handler(int sig)
 	struct job_t *job;
 	sigset_t mask, prev;
 	sigfillset(&mask);
-	while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0){
+	if ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0){
 		sigprocmask(SIG_BLOCK, &mask, &prev);
 		if (WIFEXITED(status)){
 			deletejob(jobs, pid);
