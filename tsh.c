@@ -338,8 +338,8 @@ void sigint_handler(int sig)
     // 这里需要利用到kill函数将信号发送给前台程序
     // 疑问：怎么确保是哪个前台进程/PID？
     // 答：前台至多有一个进程正在运行
-    pid_t pid=getppid();
-    printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(pid),pid,SIGINT);
+    pid_t pid=getpid();
+    printf("Job [%d] (%d) terminated by signal %d\n",fgpid(jobs),pid,SIGINT);
     kill(-pid,SIGINT);
     return;
 }
