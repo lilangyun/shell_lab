@@ -192,6 +192,8 @@ void eval(char *cmdline)
                 printf("%s: The command not found.\n",argv[0]);
                 exit(0);
             }
+        }
+        while(pid>0){
             addjob(jobs,pid,BG,cmdline);
         }
     }
@@ -209,6 +211,7 @@ void eval(char *cmdline)
         printf("%d %s",pid,cmdline);
         listjobs(jobs);
     }
+
     return;
 }
 
