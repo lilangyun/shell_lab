@@ -192,7 +192,7 @@ void eval(char *cmdline)
         }
         // 如果为前台命令
         if(!bg){
-            addjob(jobs,pid,FG,cmdline);
+            // addjob(jobs,pid,FG,cmdline);
             // 则需要等待前台子进程执行完再执行下一条指令
             int status;
             if(waitpid(pid,&status,0)<0){
