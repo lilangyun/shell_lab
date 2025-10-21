@@ -192,12 +192,12 @@ void eval(char *cmdline)
         }
         // 如果为前台命令
         if(!bg){
-            addjob(jobs,pid,FG,cmdline);
             // 则需要等待前台子进程执行完再执行下一条指令
             int status;
             if(waitpid(pid,&status,0)<0){
                 unix_error("waitfg: waitpid error");
             }
+            addjob(jobs,pid,FG,cmdline);
         }
         // 否则无需等待
         else{
@@ -339,6 +339,7 @@ void sigint_handler(int sig)
     // 疑问：怎么确保是哪个前台进程/PID？
     // 答：前台至多有一个进程正在运行
     pid_t pid=fgpid(jobs);
+    // 疑问：为什么尝试其他getpid函数求得jid均为0，只有fgpid能正确
     printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(pid),pid,SIGINT);
     kill(-pid,SIGINT);
     return;
