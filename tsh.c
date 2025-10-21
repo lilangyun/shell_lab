@@ -197,7 +197,7 @@ void eval(char *cmdline)
         if((pid=fork())==0){
 
             sigprocmask(SIG_SETMASK,&prev_one,NULL);  //这一步将block=prev，恢复之前的状态，即sigchld不再阻塞
-
+            setpgid(0,0);
             if(execve(argv[0],argv,environ)<0){
                 printf("%s: The command not found.\n",argv[0]);
                 exit(0);
@@ -213,7 +213,10 @@ void eval(char *cmdline)
         // 如果为前台命令
         if(!bg){
             // 则需要等待前台子进程执行完再执行下一条指令
-            waitfg(pid);
+            int status;
+            if(waitpid(pid,&status,0)<0){
+                unix_error("waitfg: waitpid error");
+            }
         }
         // 否则无需等待
         else{
@@ -324,9 +327,6 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
-    while (fgpid(jobs) != 0){
-        
-    }
     return;
 }
 
