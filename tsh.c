@@ -204,12 +204,13 @@ void eval(char *cmdline)
         int status;
         if(waitpid(pid,&status,0)<0){
             unix_error("waitfg: waitpid error");
-        } 
+        }
+        addjob(jobs,pid,FG,cmdline);
     }
     // 否则无需等待
     else{
         printf("%d %s",pid,cmdline);
-        listjobs(jobs);
+        addjob(jobs,pid,BG,cmdline);
     }
 
     return;
