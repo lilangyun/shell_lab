@@ -206,9 +206,9 @@ void eval(char *cmdline)
 
         // 要处理全局变量jobs,要提前阻塞全部信号
 
-        sigprocmask(SIG_BLOCK,&mask_all,NULL);
-        addjob(jobs,pid,bg?BG:FG,cmdline);
-        sigprocmask(SIG_SETMASK,&prev_one,NULL);
+        // sigprocmask(SIG_BLOCK,&mask_all,NULL);
+        // addjob(jobs,pid,bg?BG:FG,cmdline);
+        // sigprocmask(SIG_SETMASK,&prev_one,NULL);
 
         // 如果为前台命令
         if(!bg){
