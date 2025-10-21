@@ -183,7 +183,6 @@ void eval(char *cmdline)
     //如果不为内置命令
     if(!builtin_cmd(argv)){
         //那么就调用一个进程去执行它:fork()+execve()
-        //如果是子进程
         if((pid=fork())==0){
             // 如果无法执行
             if(execve(argv[0],argv,environ)<0){
@@ -191,6 +190,7 @@ void eval(char *cmdline)
                 exit(0);
             }
         }
+        addjob(jobs,pid,FG,cmdline);
         // 如果为前台命令
         if(!bg){
             addjob(jobs,pid,FG,cmdline);
