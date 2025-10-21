@@ -365,7 +365,6 @@ void sigint_handler(int sig)
     // 疑问：为什么尝试其他getpid函数求得jid均为0，只有fgpid能正确
     printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(pid),pid,SIGINT);
     kill(-pid,SIGINT);
-    deletejob(jobs,pid);
     return;
 }
 
