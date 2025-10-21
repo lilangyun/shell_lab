@@ -345,10 +345,11 @@ void waitfg(pid_t pid)
 void sigchld_handler(int sig) 
 {
     pid_t pid;
-    while((pid=waitpid(-1,NULL,WNOHANG))>0){  //这里确保是因为终止或停止返回的PID
+    int status;
+    while((pid=waitpid(-1,status,WNOHANG|WUNTRACED))>0){  //这里确保是因为终止或停止
         // printf("Handler reap the child.\n");
-        // 注意：shell收到sigchld有可能是因为子进程收到停止信号
-        deletejob(jobs,pid);
+        // 注意：shell收到sigchld有可能是因为子进程收到停止信号，不需要杀死
+        
     }
 }
 
@@ -376,11 +377,18 @@ void sigint_handler(int sig)
  */
 void sigtstp_handler(int sig) 
 {
-    pid_t pid=fgpid(jobs);
-    printf("Job [%d] (%d) stopped by signal %d\n",pid2jid(pid),pid,SIGTSTP);
-    kill(-pid,SIGTSTP);
-    jobs[pid2jid(pid)].state=ST;
-    return;
+    pid_t pid = fgpid(jobs);
+    if (pid > 0) {
+        // 发送SIGTSTP暂停进程
+        kill(-pid, SIGTSTP);
+        
+        // 重要：不要立即删除作业，而是标记为停止状态
+        struct job_t *job = getjobpid(jobs, pid);
+        if (job) {
+            job->state = ST;  // 将状态改为STOPPED
+            printf("Job [%d] (%d) stopped by signal %d\n", job->jid, pid, sig);
+        }
+    }
 }
 
 /*********************
