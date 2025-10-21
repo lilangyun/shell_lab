@@ -345,8 +345,10 @@ void waitfg(pid_t pid)
 void sigchld_handler(int sig) 
 {
     pid_t pid;
-    while((pid=waitpid(-1,NULL,0))>0){
+    while((pid=waitpid(-1,NULL,WNOHANG))>0){  //这里确保是因为终止或停止返回的PID
         // printf("Handler reap the child.\n");
+        // 注意：shell收到sigchld有可能是因为子进程收到停止信号
+        deletejob(jobs,pid);
     }
 }
 
