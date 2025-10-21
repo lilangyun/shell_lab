@@ -209,7 +209,6 @@ void eval(char *cmdline)
         printf("%d %s",pid,cmdline);
         addjob(jobs,pid,BG,cmdline);
     }
-
     return;
 }
 
