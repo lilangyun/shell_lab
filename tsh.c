@@ -190,7 +190,6 @@ void eval(char *cmdline)
                 exit(0);
             }
         }
-        addjob(jobs,pid,FG,cmdline);
         // 如果为前台命令
         if(!bg){
             addjob(jobs,pid,FG,cmdline);
@@ -340,8 +339,8 @@ void sigint_handler(int sig)
     // 疑问：怎么确保是哪个前台进程/PID？
     // 答：前台至多有一个进程正在运行
     pid_t pid=getppid();
-    kill(-pid,SIGINT);
     printf("Job [%d] (%d) terminated by signal %d\n",pid2jid(pid),pid,SIGINT);
+    kill(-pid,SIGINT);
     return;
 }
 
