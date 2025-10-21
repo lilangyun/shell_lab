@@ -200,7 +200,6 @@ void eval(char *cmdline)
         if(waitpid(pid,&status,0)<0){
             unix_error("waitfg: waitpid error");
         }
-        addjob(jobs,pid,FG,cmdline);
     }
     // 否则无需等待
     else{
