@@ -209,7 +209,6 @@ void eval(char *cmdline)
         printf("%d %s",pid,cmdline);
         listjobs(jobs);
     }
-    printf("HELLO \n");
     return;
 }
 
