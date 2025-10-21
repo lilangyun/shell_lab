@@ -206,6 +206,7 @@ void eval(char *cmdline)
     else{
         printf("%d %s",pid,cmdline);
         addjob(jobs,pid,BG,cmdline);
+        listjobs(jobs);
     }
     return;
 }
@@ -325,7 +326,6 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
-    
     while(waitpid(-1,NULL,0)>0){
         printf("Handler reap the child.\n");
     }
