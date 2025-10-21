@@ -220,6 +220,7 @@ void eval(char *cmdline)
             sigprocmask(SIG_BLOCK,&mask_all,NULL);
             addjob(jobs,pid,FG,cmdline);
             sigprocmask(SIG_SETMASK,&prev_one,NULL);
+            waitfg(pid);
         }
         // 否则无需等待
         else{
@@ -333,7 +334,17 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
+    sigset_t mask, prev;
+	sigemptyset(&mask);
+	sigaddset(&mask, SIGCHLD);
+	sigprocmask(SIG_BLOCK, &mask, &prev);
+	while (fgpid(jobs) != 0){
+		sigsuspend(&mask);
+		//printf ("wait here\n");
+	}
+	sigprocmask(SIG_SETMASK, &prev, NULL);
     return;
+    // return;
 }
 
 /*****************
