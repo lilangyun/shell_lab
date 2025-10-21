@@ -327,14 +327,11 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
-    int olderror=errno;
-    sigset_t mask_all;
-    pid_t pid;
-    if(waitpid(-1,NULL,0)>0){
+    
+    while(waitpid(-1,NULL,0)>0){
         printf("Handler reap the child.\n");
     }
     sleep(1);
-    return;
 }
 
 /* 
