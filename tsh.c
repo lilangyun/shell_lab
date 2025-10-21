@@ -192,8 +192,8 @@ void eval(char *cmdline)
                 printf("%s: The command not found.\n",argv[0]);
                 exit(0);
             }
+            addjob(jobs,pid,BG,cmdline);
         }
-        addjob(jobs,pid,BG,cmdline);
     }
 
     // 如果为不后台命令
