@@ -180,23 +180,23 @@ void eval(char *cmdline)
         return ;
     }
 
-    sigset_t mask_all,mask,prev_one;
+    // sigset_t mask_all,mask,prev_one;
 
-    sigfillset(&mask_all);  //接受所有信号
-    sigemptyset(&mask);  //将mask设置为空
-    sigaddset(&mask,SIGCHLD);  //mask的sigchld为1
+    // sigfillset(&mask_all);  //接受所有信号
+    // sigemptyset(&mask);  //将mask设置为空
+    // sigaddset(&mask,SIGCHLD);  //mask的sigchld为1
 
     //如果不为内置命令
     if(!builtin_cmd(argv)){
 
         // 阻塞sigchild信号
-        sigprocmask(SIG_BLOCK,&mask,&prev_one);  //这一步相当于block|mask,即block的sigchld置位
+        // sigprocmask(SIG_BLOCK,&mask,&prev_one);  //这一步相当于block|mask,即block的sigchld置位
         // 也就是说对于sigchld信号来说，父进程都不会响应
 
         //调用一个进程去执行cmdline:fork()+execve()
         if((pid=fork())==0){
 
-            sigprocmask(SIG_SETMASK,&prev_one,NULL);  //这一步将block=prev，恢复之前的状态，即sigchld不再阻塞
+            // sigprocmask(SIG_SETMASK,&prev_one,NULL);  //这一步将block=prev，恢复之前的状态，即sigchld不再阻塞
             setpgid(0,0);
             if(execve(argv[0],argv,environ)<0){
                 printf("%s: The command not found.\n",argv[0]);
@@ -206,9 +206,9 @@ void eval(char *cmdline)
 
         // 要处理全局变量jobs,要提前阻塞全部信号
 
-        sigprocmask(SIG_BLOCK,&mask_all,NULL);
-        addjob(jobs,pid,bg?BG:FG,cmdline);
-        sigprocmask(SIG_SETMASK,&prev_one,NULL);
+        // sigprocmask(SIG_BLOCK,&mask_all,NULL);
+        // addjob(jobs,pid,bg?BG:FG,cmdline);
+        // sigprocmask(SIG_SETMASK,&prev_one,NULL);
 
         // 如果为前台命令
         if(!bg){
