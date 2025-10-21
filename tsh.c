@@ -202,6 +202,7 @@ void eval(char *cmdline)
                 printf("%s: The command not found.\n",argv[0]);
                 exit(0);
             }
+            exit(0);
         }
 
         // 要处理全局变量jobs,要提前阻塞全部信号
