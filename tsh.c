@@ -198,8 +198,6 @@ void eval(char *cmdline)
             if(waitpid(pid,&status,0)<0){
                 unix_error("waitfg: waitpid error");
             }
-            deletejob(jobs,pid);
-            // 销毁，否则就会残留在job_list中干扰结果
         }
         // 否则无需等待
         else{
@@ -327,8 +325,11 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
+    pid_t pid;
     while(waitpid(-1,NULL,0)>0){
         // printf("Handler reap the child.\n");
+        pid=getpid();
+        deletejob(jobs,pid);
     }
 }
 
