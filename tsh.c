@@ -170,6 +170,10 @@ void eval(char *cmdline)
     int bg; //是否在后台执行
     pid_t pid;  //进程id
 
+    sigset_t mask_all,prev_all;
+
+    // sigprocmask();
+
     strcpy(buf,cmdline);  //将命令行复制到buf中
     bg=parseline(buf,argv);  //解析命令行,接受返回值
     // 这里因为在paseline中需要移动/修改参数，所以需要用buf缓冲区储存一下
@@ -189,6 +193,7 @@ void eval(char *cmdline)
                 exit(0);
             }
         }
+        addjob(jobs,pid,BG,cmdline);
     }
 
     // 如果为不后台命令
@@ -202,7 +207,9 @@ void eval(char *cmdline)
     // 否则无需等待
     else{
         printf("%d %s",pid,cmdline);
+        listjobs(jobs);
     }
+    printf("HELLO \n");
     return;
 }
 
@@ -275,6 +282,7 @@ int builtin_cmd(char **argv)
         return 1;
     }
     if(!strcmp(argv[0],"jobs")){
+        // 目前不确定jobs的功能
         listjobs(jobs);
         return 1;
     }
@@ -285,9 +293,9 @@ int builtin_cmd(char **argv)
         return 1;
     }
     // 教材上提到忽略单个&
-    // if(!strcmp(argv[0],"&")){
-    //     return 1;
-    // }
+    if(!strcmp(argv[0],"&")){
+        return 1;
+    }
     return 0;     /* not a builtin command */
 }
 
@@ -320,8 +328,13 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
-    // 我们现这样写，即默认杀死子进程
-    exit(0);
+    int olderror=errno;
+    sigset_t mask_all;
+    pid_t pid;
+    if(waitpid(-1,NULL,0)>0){
+        printf("Handler reap the child.\n");
+    }
+    sleep(1);
     return;
 }
 
@@ -483,6 +496,7 @@ void listjobs(struct job_t *jobs)
     for (i = 0; i < MAXJOBS; i++) {
 	if (jobs[i].pid != 0) {
 	    printf("[%d] (%d) ", jobs[i].jid, jobs[i].pid);
+        // 我们在此处看到了test04的参考输出，说明我们的实现也应该调用listjobs()
 	    switch (jobs[i].state) {
 		case BG: 
 		    printf("Running ");
