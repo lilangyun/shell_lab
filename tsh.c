@@ -327,7 +327,6 @@ void sigchld_handler(int sig)
     while(waitpid(-1,NULL,0)>0){
         // printf("Handler reap the child.\n");
     }
-    sleep(1);
 }
 
 /* 
