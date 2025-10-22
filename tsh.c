@@ -344,8 +344,8 @@ void do_bgfg(char **argv)
             int jid=strtol(argv[1]+1,NULL,10);
             printf("HELLO1\n");
             // 这里要对全局变量做改动，是否应该进行信号阻塞呢？
-            jobs[jid].state=BG;
             kill(-jobs[jid].pid,SIGCONT);
+            jobs[jid].state=BG;
         }
         else{
             int pid=strtol(argv[1]+1,NULL,10);
