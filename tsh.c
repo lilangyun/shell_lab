@@ -352,14 +352,14 @@ void do_bgfg(char **argv)
     if(!strcmp(argv[0],"bg")){
         job->state=BG;
         kill(-pid,SIGCONT);
+        printf("[%d] (%d) %s",jid,pid,cmdline);
     }
     else if(!strcmp(argv[0],"fg")){
         job->state=FG;
         kill(-pid,SIGCONT);
+        printf("[%d] (%d) %s",jid,pid,cmdline);
         waitfg(pid);
     }
-
-    printf("[%d] (%d) %s",jid,pid,cmdline);
     return;
 }
 
