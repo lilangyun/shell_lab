@@ -184,20 +184,21 @@ void eval(char *cmdline)
 
     sigfillset(&mask_all);  //接受所有信号
     sigemptyset(&mask);  //将mask设置为空
-    sigaddset(&mask,SIGCHLD);  //mask的sigchld为1
+    sigaddset(&mask,SIGCHLD);  //将mask的sigchld置位
 
     //如果不为内置命令
     if(!builtin_cmd(argv)){
 
         // 阻塞sigchild信号
         sigprocmask(SIG_BLOCK,&mask,&prev_one);  //这一步相当于block|mask,即block的sigchld置位
-        // 也就是说对于sigchld信号来说，父进程都不会响应
+        // 也就是说对于sigchld信号来说，父进程都不会响应，这可以避免子进程死亡后再addjob一个错误的job
 
         //调用一个进程去执行cmdline:fork()+execve()
         if((pid=fork())==0){
-
+            
+            // 在子进程执行前，必须要将sigchld恢复，我理解是子进程可能也有子子进程终止
             sigprocmask(SIG_SETMASK,&prev_one,NULL);  //这一步将block=prev，恢复之前的状态，即sigchld不再阻塞
-            setpgid(0,0);
+            setpgid(0,0);  //每一个子进程都创建一个新的进程组，这主要用于后台进程的分离
             if(execve(argv[0],argv,environ)<0){
                 printf("%s: The command not found.\n",argv[0]);
                 exit(0);
@@ -217,6 +218,8 @@ void eval(char *cmdline)
             // if(waitpid(pid,&status,0)<0){
             //     unix_error("waitfg: waitpid error");
             // }
+
+            // 在处理全局变量时，应该阻塞所有信号，防止更新过程被信号破坏，而在信号处理函数中又对全局变量做了手脚
             sigprocmask(SIG_BLOCK,&mask_all,NULL);
             addjob(jobs,pid,FG,cmdline);
             sigprocmask(SIG_SETMASK,&prev_one,NULL);
@@ -368,17 +371,21 @@ void sigchld_handler(int sig)
 	struct job_t *job;
 	sigset_t mask, prev;
 	sigfillset(&mask);
+
+    // 这里因为我们并没有在eval中创建太多子进程，因此不需要while一直等待
 	if ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0){
+
+        // 一旦对全局变量jobs做更改，最好要屏蔽所有信号
 		sigprocmask(SIG_BLOCK, &mask, &prev);
-		if (WIFEXITED(status)){
+		if (WIFEXITED(status)){  //如果是执行终止
 			deletejob(jobs, pid);
 		}
-		else if (WIFSIGNALED(status)){
-			printf ("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid, WTERMSIG(status));
+		else if (WIFSIGNALED(status)){  //如果是被信号终止
+			printf ("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid,sig);
 			deletejob(jobs, pid);
 		}
-		else if (WIFSTOPPED(status)){
-			printf ("Job [%d] (%d) stoped by signal %d\n", pid2jid(pid), pid, WSTOPSIG(status));
+		else if (WIFSTOPPED(status)){  //如果是被信号打停
+			printf ("Job [%d] (%d) stopped by signal %d\n", pid2jid(pid), pid,sig);
 			job = getjobpid(jobs,pid);
 			job->state = ST;
 		}
