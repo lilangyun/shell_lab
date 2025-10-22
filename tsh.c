@@ -345,6 +345,7 @@ void do_bgfg(char **argv)
             int pid=strtol(argv[1]+1,NULL,10);
             struct job_t *job=getjobpid(jobs,pid);
             job->state=BG;
+            printf("HELLO");
         }
     }
     return;
