@@ -350,13 +350,15 @@ void do_bgfg(char **argv)
     // 解析阶段结束
 
     if(!strcmp(argv[0],"bg")){
+        job->state=BG;
         kill(-pid,SIGCONT);
     }
     else if(!strcmp(argv[0],"fg")){
+        job->state=FG;
         kill(-pid,SIGCONT);
     }
 
-    printf("[%d] (%d) %s \n",jid,pid,cmdline);
+    printf("[%d] (%d) %s",jid,pid,cmdline);
     return;
 }
 
