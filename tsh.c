@@ -198,26 +198,16 @@ void eval(char *cmdline)
             
             // 在子进程执行前，必须要将sigchld恢复，我理解是子进程可能也有子子进程终止
             sigprocmask(SIG_SETMASK,&prev_one,NULL);  //这一步将block=prev，恢复之前的状态，即sigchld不再阻塞
-            setpgid(0,0);  //每一个子进程都创建一个新的进程组，这可用于前台进程的分离
-            if(execve(argv[0],argv,environ)<0){
+            setpgid(0,0);  //每一个子进程都创建一个新的进程组，这可用于进程之间的分离，避免粘连
+            if(execve(argv[0],argv,environ)<0){  //系统调用错误检查，符合实验要求
                 printf("%s: Command not found\n",argv[0]);
                 exit(0);
             }
         }
 
-        // 要处理全局变量jobs,要提前阻塞全部信号
-
-        // sigprocmask(SIG_BLOCK,&mask_all,NULL);
-        // addjob(jobs,pid,bg?BG:FG,cmdline);
-        // sigprocmask(SIG_SETMASK,&prev_one,NULL);
-
         // 如果为前台命令
         if(!bg){
             // 则需要等待前台子进程执行完再执行下一条指令
-            // int status;
-            // if(waitpid(pid,&status,0)<0){
-            //     unix_error("waitfg: waitpid error");
-            // }
 
             // 在处理全局变量时，应该阻塞所有信号，防止更新过程被信号破坏，而在信号处理函数中又对全局变量做了手脚
             sigprocmask(SIG_BLOCK,&mask_all,NULL);
@@ -225,7 +215,7 @@ void eval(char *cmdline)
             sigprocmask(SIG_SETMASK,&prev_one,NULL);
             waitfg(pid);
         }
-        // 否则无需等待
+        // 后台命令则无需等待
         else{
             sigprocmask(SIG_BLOCK,&mask_all,NULL);
             addjob(jobs,pid,BG,cmdline);
@@ -346,7 +336,7 @@ void do_bgfg(char **argv)
     
     int t=(int)strtol(tmp,&endptr,10);
     if(*endptr!='\0'){
-        fprintf(stderr,"%s: argument must be a PID or %%jobid\n",argv[0]);
+        printf("%s: argument must be a PID or %%jobid\n",argv[0]);
         return ;
     }
     // 错误处理
@@ -390,16 +380,6 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
-    // sigset_t mask, prev;
-	// sigemptyset(&mask);
-	// sigaddset(&mask, SIGCHLD);
-	// sigprocmask(SIG_BLOCK, &mask, &prev);
-	// while (fgpid(jobs) != 0){
-	// 	sigsuspend(&mask);
-	// 	//printf ("wait here\n");
-	// }
-	// sigprocmask(SIG_SETMASK, &prev, NULL);
-    // return;
     while (fgpid(jobs)==pid) {
         sleep(0.1);  // 避免过度占用CPU
     }
