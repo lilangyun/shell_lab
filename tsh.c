@@ -200,7 +200,7 @@ void eval(char *cmdline)
             sigprocmask(SIG_SETMASK,&prev_one,NULL);  //这一步将block=prev，恢复之前的状态，即sigchld不再阻塞
             setpgid(0,0);  //每一个子进程都创建一个新的进程组，这可用于前台进程的分离
             if(execve(argv[0],argv,environ)<0){
-                printf("%s: Command not found.\n",argv[0]);
+                printf("%s: Command not found\n",argv[0]);
                 exit(0);
             }
         }
