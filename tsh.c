@@ -357,7 +357,6 @@ void do_bgfg(char **argv)
     else if(!strcmp(argv[0],"fg")){
         job->state=FG;
         kill(-pid,SIGCONT);
-        printf("[%d] (%d) %s",jid,pid,cmdline);
         waitfg(pid);
     }
     return;
