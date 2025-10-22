@@ -335,7 +335,7 @@ void do_bgfg(char **argv)
     struct job_t *job;
 
     if(tmp==NULL){
-        printf("%s command requires PID or %jobid argument\n",argv[0]);
+        printf("%s command requires PID or %%jobid argument\n",argv[0]);
         return ;
     }
     // 判断非空之后，我们才能正常进行jid或pid的判断
@@ -346,7 +346,7 @@ void do_bgfg(char **argv)
     
     int t=(int)strtol(tmp,&endptr,10);
     if(*endptr!='\0'){
-        printf("%s: argument must be a PID or %jobid\n",argv[0]);
+        printf("%s: argument must be a PID or %%jobid\n",argv[0]);
         return ;
     }
     // 错误处理
