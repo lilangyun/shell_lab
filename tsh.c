@@ -311,7 +311,7 @@ int builtin_cmd(char **argv)
         // 自答：前台作业就是当前窗口，并且至多只能为一个。还是理解不深
         return 1;
     }
-    if(!strcmp(argv[0],"fg")||!strcmp(argv[0],"bg")){
+    if((!strcmp(argv[0],"fg"))||(!strcmp(argv[0],"bg"))){
         do_bgfg(argv);
         return 1;
     }
