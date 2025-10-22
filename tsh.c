@@ -336,14 +336,17 @@ void do_bgfg(char **argv)
         // 并且我们使用setpgid,事实上每个进程都只在自己的进程组中
         if(argv[1][1]-'%'==0){
             // 如果有前缀%,即处理jid
-            int jid=strtol(argv[1][2],NULL,10);
+            int jid=strtol(argv[1]+1,NULL,10);
             printf("HELLO");
             // 这里要对全局变量做改动，是否应该进行信号阻塞呢？
             jobs[jid].state=BG;
             kill(-jobs[jid].pid,SIGCONT);
         }
         else{
-
+            int pid=strtol(argv[1]+1,NULL,10);
+            struct job_t *job=getjobpid(jobs,pid);
+            job->state=BG;
+            kill(-pid,SIGCONT);
         }
     }
     return;
