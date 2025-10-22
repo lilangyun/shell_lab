@@ -334,7 +334,7 @@ void do_bgfg(char **argv)
     else if(!strcmp(argv[0],"bg")){
         // 这里bg功能很好实现，只要将某个后台作业状态调整一下就好了
         // 并且我们使用setpgid,事实上每个进程都只在自己的进程组中
-        pid_t pid=getegid();
+        pid_t pid=getpid();
         if(!strcmp(argv[1][1],'%')){
             // 如果有前缀%,即处理jid
             int jid=strtol(argv[1]+1,NULL,10);
