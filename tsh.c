@@ -342,7 +342,7 @@ void do_bgfg(char **argv)
         if(argv[1][0]-'%'==0){
             // 如果有前缀%,即处理jid
             int jid=strtol(argv[1]+1,NULL,10);
-            printf("HELLO");
+            printf("HELLO1\n");
             // 这里要对全局变量做改动，是否应该进行信号阻塞呢？
             jobs[jid].state=BG;
             kill(-jobs[jid].pid,SIGCONT);
@@ -351,7 +351,7 @@ void do_bgfg(char **argv)
             int pid=strtol(argv[1]+1,NULL,10);
             struct job_t *job=getjobpid(jobs,pid);
             job->state=BG;
-            printf("HELLO");
+            printf("HELLO2\n");
             kill(-pid,SIGCONT);
         }
     }
