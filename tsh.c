@@ -347,7 +347,7 @@ void waitfg(pid_t pid)
 	// }
 	// sigprocmask(SIG_SETMASK, &prev, NULL);
     // return;
-    while (fgpid(jobs) == pid) {
+    while (fgpid(jobs)==pid) {
         sleep(0.1);  // 避免过度占用CPU
     }
 }
