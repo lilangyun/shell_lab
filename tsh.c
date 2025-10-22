@@ -346,7 +346,7 @@ void do_bgfg(char **argv)
     
     int t=(int)strtol(tmp,&endptr,10);
     if(*endptr!='\0'){
-        printf("%s: argument must be a PID or %%jobid\n",argv[0]);
+        fprintf(stderr,"%s: argument must be a PID or %%jobid\n",argv[0]);
         return ;
     }
     // 错误处理
