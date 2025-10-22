@@ -308,13 +308,11 @@ int builtin_cmd(char **argv)
         //jobs:列出正在运行和停止的后台作业
         listjobs(jobs);
         // 疑问：前台作业为什么不列出
-        // 自答：前台作业就是当前窗口
+        // 自答：前台作业就是当前窗口，并且至多只能为一个。还是理解不深
         return 1;
     }
-    if(!strcmp(argv[0],"fg")){
-        return 1;
-    }
-    if(!strcmp(argv[0],"bg")){
+    if(!strcmp(argv[0],"fg")||!strcmp(argv[0],"bg")){
+        do_bgfg(argv);
         return 1;
     }
     // 教材上提到忽略单个&
@@ -329,6 +327,25 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv) 
 {
+    // 传进来的argv是字符串组，argv[0]表示命令名称
+    if(!strcmp(argv[0],"fg")){
+
+    }
+    else if(!strcmp(argv[0],"bg")){
+        // 这里bg功能很好实现，只要将某个后台作业状态调整一下就好了
+        // 并且我们使用setpgid,事实上每个进程都只在自己的进程组中
+        pid_t pid=getegid();
+        if(!strcmp(argv[1][1],'%')){
+            // 如果有前缀%,即处理jid
+            int jid=strtol(argv[1]+1,NULL,10);
+            // 这里要对全局变量做改动，是否应该进行信号阻塞呢？
+            jobs[jid].state=BG;
+            kill(-pid,SIGCONT);
+        }
+        else{
+
+        }
+    }
     return;
 }
 
