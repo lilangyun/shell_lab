@@ -442,7 +442,7 @@ void sigint_handler(int sig)
     // kill(-pid,sig);
     // return;
     pid_t pid;
-	while ((pid = fgpid(jobs)) > 0)
+	if ((pid = fgpid(jobs)) > 0)
 		kill(-pid, sig);
     return;
 }
