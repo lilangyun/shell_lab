@@ -200,7 +200,7 @@ void eval(char *cmdline)
             sigprocmask(SIG_SETMASK,&prev_one,NULL);  //这一步将block=prev，恢复之前的状态，即sigchld不再阻塞
             setpgid(0,0);  //每一个子进程都创建一个新的进程组，这可用于前台进程的分离
             if(execve(argv[0],argv,environ)<0){
-                printf("%s: The command not found.\n",argv[0]);
+                printf("%s: Command not found.\n",argv[0]);
                 exit(0);
             }
         }
@@ -411,11 +411,11 @@ void sigchld_handler(int sig)
 			deletejob(jobs, pid);
 		}
 		else if (WIFSIGNALED(status)){  //如果是被信号终止
-			printf ("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid,sig);
+			printf ("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid,SIGINT);
 			deletejob(jobs, pid);
 		}
 		else if (WIFSTOPPED(status)){  //如果是被信号打停
-			printf ("Job [%d] (%d) stopped by signal %d\n", pid2jid(pid), pid,sig);
+			printf ("Job [%d] (%d) stopped by signal %d\n", pid2jid(pid), pid,SIGTSTP);
 			job = getjobpid(jobs,pid);
 			job->state = ST;
 		}
