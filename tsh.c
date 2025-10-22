@@ -337,6 +337,7 @@ void do_bgfg(char **argv)
         if(!(argv[1][1]-'%')){
             // 如果有前缀%,即处理jid
             int jid=strtol(argv[1]+1,NULL,10);
+            printf("HELLO");
             // 这里要对全局变量做改动，是否应该进行信号阻塞呢？
             jobs[jid].state=BG;
             kill(-jobs[jid].pid,SIGCONT);
