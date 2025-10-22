@@ -340,13 +340,11 @@ void do_bgfg(char **argv)
             printf("HELLO");
             // 这里要对全局变量做改动，是否应该进行信号阻塞呢？
             jobs[jid].state=BG;
-            kill(-jobs[jid].pid,SIGCONT);
         }
         else{
             int pid=strtol(argv[1]+1,NULL,10);
             struct job_t *job=getjobpid(jobs,pid);
             job->state=BG;
-            kill(-pid,SIGCONT);
         }
     }
     return;
