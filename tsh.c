@@ -331,19 +331,42 @@ void do_bgfg(char **argv)
     pid_t pid;
     char *tmp=argv[1];
     int isjid=0;
+    char *endptr;
     struct job_t *job;
 
+    if(tmp==NULL){
+        printf("%s command requires PID or %jobid argument\n",argv[0]);
+        return ;
+    }
+    // 判断非空之后，我们才能正常进行jid或pid的判断
     if(tmp[0]=='%'){
         tmp+=1;
         isjid=1;
     }
-    int t=(int)strtol(tmp,NULL,0);
+    
+    int t=(int)strtol(tmp,&endptr,10);
+    if(*endptr!='\0'){
+        printf("%s: argument must be a PID or %jobid\n",argv[0]);
+        return ;
+    }
+    // 错误处理
+
     if(isjid){
         job=getjobjid(jobs,t);
     }
     else{
         job=getjobpid(jobs,t);
     }
+    if(job==NULL){
+        if(isjid){
+            printf("%s: No such job\n",argv[1]);
+        }
+        else{
+            printf("(%s): No such process\n",argv[1]);
+        }
+        return ;
+    }
+    // 判断任务存在后才能进行操作
     jid=job->jid;
     pid=job->pid;
     char *cmdline=job->cmdline;
