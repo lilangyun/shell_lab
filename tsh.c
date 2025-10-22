@@ -327,6 +327,11 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv) 
 {
+    sigset_t mask_all,prev_one;
+
+    sigfillset(&mask_all);  //接受所有信号
+    sigprocmask(SIG_BLOCK,&mask_all,&prev_one);
+
     // 传进来的argv是字符串组，argv[0]表示命令名称
     if(!strcmp(argv[0],"fg")){
 
@@ -348,6 +353,8 @@ void do_bgfg(char **argv)
             printf("HELLO");
         }
     }
+
+    sigprocmask(SIG_SETMASK,&prev_one,NULL);
     return;
 }
 
