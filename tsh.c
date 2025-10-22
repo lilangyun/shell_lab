@@ -327,37 +327,36 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv) 
 {
-    sigset_t mask_all,prev_one;
+    int jid;
+    pid_t pid;
+    char *tmp=argv[1];
+    int isjid=0;
+    struct job_t *job;
 
-    sigfillset(&mask_all);  //接受所有信号
-
-    // 传进来的argv是字符串组，argv[0]表示命令名称
-    if(!strcmp(argv[0],"fg")){
-
+    if(tmp[0]=='%'){
+        tmp+=1;
+        isjid=1;
     }
-    else if(!strcmp(argv[0],"bg")){
-        // 这里bg功能很好实现，只要将某个后台作业状态调整一下就好了
-        // 并且我们使用setpgid,事实上每个进程都只在自己的进程组中
-        if(argv[1][0]-'%'==0){
-            // 如果有前缀%,即处理jid
-            int jid=strtol(argv[1]+1,NULL,10);
-            printf("HELLO1\n");
-            // 这里要对全局变量做改动，是否应该进行信号阻塞呢？
-            kill(-jobs[jid].pid,SIGCONT);
-            sigprocmask(SIG_BLOCK,&mask_all,&prev_one);
-            jobs[jid].state=BG;
-            sigprocmask(SIG_SETMASK,&prev_one,NULL);
-        }
-        else{
-            int pid=strtol(argv[1]+1,NULL,10);
-            sigprocmask(SIG_BLOCK,&mask_all,&prev_one);
-            struct job_t *job=getjobpid(jobs,pid);
-            job->state=BG;
-            sigprocmask(SIG_SETMASK,&prev_one,NULL);
-            printf("HELLO2\n");
-            kill(-pid,SIGCONT);
-        }
+    int t=(int)strtol(tmp,NULL,0);
+    if(isjid){
+        job=getjobjid(jobs,t);
     }
+    else{
+        job=getjobpid(jobs,t);
+    }
+    jid=job->jid;
+    pid=job->pid;
+    char *cmdline=job->cmdline;
+    // 解析阶段结束
+
+    if(!strcmp(argv[0],"bg")){
+        kill(-pid,SIGCONT);
+    }
+    else if(!strcmp(argv[0],"fg")){
+        kill(-pid,SIGCONT);
+    }
+
+    printf("[%d] (%d) %s \n",jid,pid,cmdline);
     return;
 }
 
