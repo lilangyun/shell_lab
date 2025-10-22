@@ -330,7 +330,6 @@ void do_bgfg(char **argv)
     sigset_t mask_all,prev_one;
 
     sigfillset(&mask_all);  //接受所有信号
-    sigprocmask(SIG_BLOCK,&mask_all,&prev_one);
 
     // 传进来的argv是字符串组，argv[0]表示命令名称
     if(!strcmp(argv[0],"fg")){
@@ -345,18 +344,20 @@ void do_bgfg(char **argv)
             printf("HELLO1\n");
             // 这里要对全局变量做改动，是否应该进行信号阻塞呢？
             kill(-jobs[jid].pid,SIGCONT);
+            sigprocmask(SIG_BLOCK,&mask_all,&prev_one);
             jobs[jid].state=BG;
+            sigprocmask(SIG_SETMASK,&prev_one,NULL);
         }
         else{
             int pid=strtol(argv[1]+1,NULL,10);
+            sigprocmask(SIG_BLOCK,&mask_all,&prev_one);
             struct job_t *job=getjobpid(jobs,pid);
             job->state=BG;
+            sigprocmask(SIG_SETMASK,&prev_one,NULL);
             printf("HELLO2\n");
             kill(-pid,SIGCONT);
         }
     }
-
-    sigprocmask(SIG_SETMASK,&prev_one,NULL);
     return;
 }
 
