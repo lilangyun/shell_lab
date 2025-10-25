@@ -406,7 +406,7 @@ void sigchld_handler(int sig)
 	sigfillset(&mask);
 
     // 这里因为我们并没有在eval中创建太多子进程，因此不需要while一直等待
-	if ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0){
+	while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0){
 
         // 一旦对全局变量jobs做更改，最好要屏蔽所有信号
 		sigprocmask(SIG_BLOCK, &mask, &prev);
